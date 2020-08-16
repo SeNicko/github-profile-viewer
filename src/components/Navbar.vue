@@ -6,6 +6,7 @@
         name="username"
         type="text"
         placeholder="Find a github user!"
+        autocomplete="off"
       />
       <button type="submit" class="search-button space">
         Search
@@ -23,7 +24,7 @@ export default {
 <style scoped>
 .navbar {
   width: 100vw;
-  height: 5rem;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,6 +45,18 @@ export default {
   padding: 10px;
   border-radius: 5px;
   outline: none;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  border: none;
+  background: rgb(19, 96, 197);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+  transition: 0.2s all ease-in-out;
 }
 
 .space {
