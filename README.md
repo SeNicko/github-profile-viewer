@@ -2,8 +2,8 @@
 
 ### Done
 
-- [x] Allow to search users by their login :ok_hand:
 - [x] create searchbar component :star:
+- [x] Allow to search users by their login :ok_hand:
 - [x] Create user card with profile info :kiss:
 - [x] Create repos tab with user repositories :earth_asia:
 - [x] Add pagination in repos view :hand:
