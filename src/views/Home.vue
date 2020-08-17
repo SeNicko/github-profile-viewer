@@ -14,11 +14,11 @@
           <span>Check on Github</span>
         </a>
         <ul class="breadcrumb card-item">
-          <li class="breadcrumb-item">{{ user.followers }} followers</li>
+          <li class="breadcrumb-item">{{ formatNumber(user.followers) }} followers</li>
           <span class="breadcrumb-separator">&middot;</span>
-          <li class="breadcrumb-item">{{ user.following }} following</li>
+          <li class="breadcrumb-item">{{ formatNumber(user.following) }} following</li>
           <span class="breadcrumb-separator">&middot;</span>
-          <li class="breadcrumb-item">{{ user.public_repos }} repos</li>
+          <li class="breadcrumb-item">{{ formatNumber(user.public_repos) }} repos</li>
         </ul>
         <ul class="info card-item">
           <li>
@@ -56,6 +56,18 @@
         </ul>
       </section>
       <section class="repositories">
+        <nav style="position: sticky; top: 0;">
+          <button class="button" @click="prevReposPage()" :disabled="currentReposPage <= 1">
+            prev
+          </button>
+          <button
+            class="button"
+            @click="nextReposPage()"
+            :disabled="currentReposPage >= numberOfReposPages"
+          >
+            next
+          </button>
+        </nav>
         <div class="card repositories-item" v-for="repository in repositories" :key="repository.id">
           <section class="card-item">
             <p>
@@ -75,28 +87,30 @@
             <li class="breadcrumb-item" title="watchers">
               <span class="align-vertical">
                 <img class="icon" src="@/assets/eye.svg" alt="Eye icon" />
-                <span>{{ repository.watchers_count }}</span>
+                <span>{{ formatNumber(repository.watchers_count) }}</span>
               </span>
             </li>
             <span class="breadcrumb-separator">&middot;</span>
             <li class="breadcrumb-item" title="stars">
               <span class="align-vertical">
                 <img class="icon" src="@/assets/star.svg" alt="Star icon" />
-                <span>{{ repository.stargazers_count }}</span>
+                <span>{{ formatNumber(repository.stargazers_count) }}</span>
               </span>
             </li>
             <span class="breadcrumb-separator">&middot;</span>
             <li class="breadcrumb-item" title="forks">
               <span class="align-vertical">
                 <img class="icon" src="@/assets/code-fork.svg" alt="Code fork icon" />
-                <span>{{ repository.forks_count }}</span>
+                <span>{{ formatNumber(repository.forks_count) }}</span>
               </span>
             </li>
           </ul>
           <div class="align-vertical" v-if="repository.language">
             <div
               class="language-label"
-              :style="{ background: colors[`${repository.language}`] || 'white' }"
+              :style="{
+                background: colors[`${repository.language}`] || 'white',
+              }"
             ></div>
             <span>{{ repository.language }}</span>
           </div>
@@ -111,11 +125,10 @@ import colors from '@/util/colors.json';
 
 const API_URL = 'https://api.github.com/users';
 
-const get = async (url) => {
-  const response = await fetch(url);
-  const json = await response.json();
-
-  return json;
+const formatNumber = (number) => {
+  if (number >= 1000 && number / 1000 < 1000) return `${Math.floor((number / 1000) * 10) / 10}K`;
+  if (number > 1000000) return `${Math.floor((number / 1000000) * 10) / 10}M`;
+  return number;
 };
 
 export default {
@@ -123,18 +136,59 @@ export default {
   name: 'Home',
   data: () => ({
     user: {},
-    repositories: {},
+    repositories: [],
+    currentReposPage: 1,
+    numberOfReposPages: 1,
+    reposPageSize: 30,
     colors,
+    formatNumber,
   }),
   methods: {
-    async findUser(username) {
-      this.user = await get(`${API_URL}/${username}`);
-      this.repositories = await get(`${API_URL}/${username}/repos?page=1&per_page=30`);
+    fetchUserData(username) {
+      fetch(`${API_URL}/${username}`)
+        .then((response) => response.json())
+        .then((user) => {
+          this.user = user;
+        })
+        .catch((err) => console.error(err));
+    },
+    fetchRepositories(username) {
+      fetch(
+        `${API_URL}/${username}/repos?page=${this.currentReposPage}&per_page=${this.reposPageSize}`,
+      )
+        .then((response) => {
+          const linkHeader = response.headers.get('link');
+          if (linkHeader) {
+            const lastPageLink = linkHeader.split(',')[1];
+            const indexOfPageParam = lastPageLink.indexOf('page=') + 5;
+            const endIndex = lastPageLink.indexOf('&');
+            this.numberOfReposPages = lastPageLink.slice(indexOfPageParam, endIndex);
+          }
+
+          return response.json();
+        })
+        .then((repos) => {
+          this.repositories = repos;
+        })
+        .catch((err) => console.error(err));
+    },
+    prevReposPage() {
+      if (this.currentReposPage > 1) {
+        this.currentReposPage -= 1;
+        this.fetchRepositories(this.search);
+      }
+    },
+    nextReposPage() {
+      if (this.currentReposPage < this.numberOfReposPages) {
+        this.currentReposPage += 1;
+        this.fetchRepositories(this.search);
+      }
     },
   },
   watch: {
     search(username) {
-      this.findUser(username);
+      this.fetchUserData(username);
+      this.fetchRepositories(username);
     },
   },
 };

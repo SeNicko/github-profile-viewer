@@ -43,10 +43,10 @@ export default {
   outline: none;
   background: white;
   padding: 10px 15px;
-  display: flex;
   align-items: center;
   width: fit-content;
   transition: 0.2s all ease-in-out;
+  display: inline-block;
 }
 
 .button:hover {
