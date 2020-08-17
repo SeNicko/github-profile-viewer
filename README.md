@@ -12,6 +12,7 @@
 ### Currently working on
 
 - [ ] Create prettier navbar for repos
+- [ ] Create smaller components (userCard, reposPreview etc) :star:
 - [ ] Make it responsive :sweat_drops:
 - [ ] Clean code :exclamation:
 
