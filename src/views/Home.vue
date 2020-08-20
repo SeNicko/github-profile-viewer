@@ -1,7 +1,7 @@
 <template>
   <div class="home" v-if="Object.keys(user).length > 0">
-    <userCard :user="user"></userCard>
-    <section class="repositories ml">
+    <userCard :user="user" v-if="user.message !== 'Not Found'"></userCard>
+    <section class="repositories ml" v-if="repositories.message !== 'Not Found'">
       <nav class="repository__nav">
         <button class="button" @click="prevReposPage()" :disabled="currentReposPage <= 1">
           prev
