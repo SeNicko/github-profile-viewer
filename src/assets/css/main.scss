@@ -21,14 +21,14 @@ $borderRadius: 10px;
 }
 
 ::-webkit-scrollbar {
-  width: 25px;
+  width: 20px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background-color: rgb(209, 209, 209);
-  border-left: 20px solid white;
+  border-left: 15px solid white;
 }
 
 .mt {
@@ -161,6 +161,10 @@ a:hover {
   border-radius: $borderRadius;
   padding: $padding;
   width: 100%;
+
+  &__nav {
+    display: flex;
+  }
 }
 
 .language {

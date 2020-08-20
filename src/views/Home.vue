@@ -2,12 +2,12 @@
   <div class="home" v-if="Object.keys(user).length > 0">
     <userCard :user="user"></userCard>
     <section class="repositories ml">
-      <nav style="position: sticky; top: 0; display: flex;">
+      <nav class="repository__nav">
         <button class="button" @click="prevReposPage()" :disabled="currentReposPage <= 1">
           prev
         </button>
         <button
-          class="button"
+          class="button ml"
           @click="nextReposPage()"
           :disabled="currentReposPage >= numberOfReposPages"
         >
@@ -48,33 +48,35 @@ export default {
     formatNumber,
   }),
   methods: {
-    fetchUserData(username) {
-      fetch(`${API_URL}/${username}`)
-        .then((response) => response.json())
-        .then((user) => {
-          this.user = user;
-        })
-        .catch((err) => console.error(err));
-    },
-    fetchRepositories(username) {
-      fetch(
-        `${API_URL}/${username}/repos?page=${this.currentReposPage}&per_page=${this.reposPageSize}`,
-      )
-        .then((response) => {
-          const linkHeader = response.headers.get('link');
-          if (linkHeader) {
-            const lastPageLink = linkHeader.split(',')[1];
-            const indexOfPageParam = lastPageLink.indexOf('page=') + 5;
-            const endIndex = lastPageLink.indexOf('&');
-            this.numberOfReposPages = lastPageLink.slice(indexOfPageParam, endIndex);
-          }
+    async fetchUserData(username) {
+      try {
+        const response = await fetch(`${API_URL}/${username}`);
+        const user = await response.json();
 
-          return response.json();
-        })
-        .then((repos) => {
-          this.repositories = repos;
-        })
-        .catch((err) => console.error(err));
+        this.user = user;
+      } catch {
+        this.user = {};
+      }
+    },
+    async fetchRepositories(username) {
+      try {
+        const response = await fetch(
+          `${API_URL}/${username}/repos?page=${this.currentReposPage}&per_page=${this.reposPageSize}`,
+        );
+
+        const linkHeader = response.headers.get('link');
+
+        if (linkHeader) {
+          const lastPageLink = linkHeader.split(',')[1];
+          const indexOfPageParam = lastPageLink.indexOf('page=') + 5;
+          const endIndex = lastPageLink.indexOf('&');
+          this.numberOfReposPages = lastPageLink.slice(indexOfPageParam, endIndex);
+        }
+
+        this.repositories = await response.json();
+      } catch (err) {
+        this.repositories = {};
+      }
     },
     prevReposPage() {
       if (this.currentReposPage > 1) {
