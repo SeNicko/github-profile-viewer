@@ -65,6 +65,10 @@ a:hover {
   padding: 10px;
 }
 
+.button:disabled {
+  color: #dfdfdf;
+}
+
 .navbar {
   width: 100vw;
   height: 60px;
@@ -152,6 +156,7 @@ a:hover {
 
 .repositories {
   width: 700px;
+  padding: $padding 0;
   height: calc(100vh - 60px);
   overflow-y: scroll;
 }

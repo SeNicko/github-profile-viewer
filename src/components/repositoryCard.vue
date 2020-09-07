@@ -2,7 +2,11 @@
   <article class="repository mt">
     <header class="header">
       <span>{{ repository.name }}</span>
-      <a :href="repository.html_url" class="header__subtitle --align-vertical" target="_blank">
+      <a
+        :href="repository.html_url"
+        class="header__subtitle --align-vertical"
+        target="_blank"
+      >
         <img src="@/assets/icons/link.svg" alt="Link image" class="icon" />
         <span>{{ repository.full_name }}</span>
       </a>
@@ -21,7 +25,11 @@
         </li>
         <span class="breadcrumb__item--separator">&middot;</span>
         <li class="breadcrumb__item" title="forks">
-          <img class="icon" src="@/assets/icons/code-fork.svg" alt="Code fork icon" />
+          <img
+            class="icon"
+            src="@/assets/icons/code-fork.svg"
+            alt="Code fork icon"
+          />
           <span>{{ formatNumber(repository.forks_count) }}</span>
         </li>
       </ul>
